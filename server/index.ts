@@ -5,6 +5,8 @@ import session from 'express-session'
 import next from 'next'
 import socket_io from 'socket.io'
 
+import { DBManager } from './modules/DBManager'
+
 dotenv.config()
 
 const port = parseInt(process.env.PORT as any, 10) || 3000
@@ -12,7 +14,18 @@ const dev = process.env.NODE_ENV !== 'production'
 const nextApp = next({ dev })
 const handle = nextApp.getRequestHandler()
 
-nextApp.prepare().then(() => {
+const dbManager = new DBManager()
+
+// dbManager.createUser({
+//   user_id: 'test-user-' + Math.floor(Math.random() * 10000),
+//   // user_id: 'test-user-2789',
+//   name: 'Test Man!',
+//   password: 'super!testPassword',
+//   description: 'This is a description'
+// }).then(console.log)
+
+nextApp.prepare().then(async () => {
+
   const expressServer = express()
   expressServer.use(express.json())
   expressServer.use(
@@ -38,6 +51,6 @@ nextApp.prepare().then(() => {
     const addr = httpServer.address()
     const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port
     console.log(`Listening on ${bind}`)
+    if (dev) console.log('http://localhost:' + port)
   })
-
 }) // ROOT
