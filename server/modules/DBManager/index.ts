@@ -1,7 +1,8 @@
 import dotenv from 'dotenv'
 import firebaseAdmin, { database } from 'firebase-admin'
 
-import createdUser, { PropsOfCreateUser } from './createUser'
+import createdUser, { User } from './createUser'
+import getUser, { ArgsOfGetUser } from './getUser'
 
 dotenv.config()
 
@@ -44,20 +45,19 @@ firebaseAdmin.initializeApp({
 
 const db = firebaseAdmin.database()
 
-// const snapshot = await db.ref('test').once('value')
-// console.log(snapshot.val())
-
 export type Status = {
   msg: string
   status: 'success' | 'error'
+  data?: any
 }
 
 export class DBManager {
-  db: database.Database
+  // db: database.Database
 
   constructor() {
-    this.db = db
+    // this.db = db
   }
 
-  createUser = async (props: PropsOfCreateUser) => await createdUser(props, this.db)
+  createUser = async (args: User) => await createdUser(args, db)
+  getUser = async (args: ArgsOfGetUser) => await getUser(args, db)
 }

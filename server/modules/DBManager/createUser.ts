@@ -1,7 +1,7 @@
 import { database } from 'firebase-admin'
 import { Status } from './index'
 
-export type PropsOfCreateUser = {
+export type User = {
   user_id: string
   password: string
   name: string
@@ -9,7 +9,7 @@ export type PropsOfCreateUser = {
   // birthday
 }
 
-const createUser = async (props: PropsOfCreateUser, db: database.Database): Promise<Status> => {
+const createUser = async (props: User, db: database.Database): Promise<Status> => {
   const { user_id, password, name, description } = props
 
   if (user_id && password && name) {

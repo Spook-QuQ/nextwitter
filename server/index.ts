@@ -5,6 +5,7 @@ import session from 'express-session'
 import next from 'next'
 import socket_io from 'socket.io'
 
+import serverApiRouter from './routes/server-api'
 import { DBManager } from './modules/DBManager'
 
 dotenv.config()
@@ -24,8 +25,14 @@ const dbManager = new DBManager()
 //   description: 'This is a description'
 // }).then(console.log)
 
-nextApp.prepare().then(async () => {
+// dbManager
+//   .getUser({
+//     user_id: 'test-user-278aa9',
+//   })
+//   .then(console.log)
+//   .catch(console.log)
 
+nextApp.prepare().then(async () => {
   const expressServer = express()
   expressServer.use(express.json())
   expressServer.use(
@@ -36,11 +43,13 @@ nextApp.prepare().then(async () => {
       cookie: { maxAge: 1000 * 60 * 30 }, // 30分
     }),
   )
+  expressServer.set('dbManager', dbManager)
 
   const httpServer = http.createServer(expressServer)
 
   const io = new socket_io.Server(httpServer)
 
+  expressServer.use('/server-api', serverApiRouter)
   expressServer.all('*', handle as unknown as RequestHandler)
 
   httpServer.listen(port)
