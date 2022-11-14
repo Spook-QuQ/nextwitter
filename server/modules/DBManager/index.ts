@@ -1,7 +1,6 @@
 import dotenv from 'dotenv'
 import firebaseAdmin, { database } from 'firebase-admin'
-
-import createdUser, { User } from './createUser'
+import createdUser from './createUser'
 import getUser, { ArgsOfGetUser } from './getUser'
 
 dotenv.config()
@@ -45,10 +44,28 @@ firebaseAdmin.initializeApp({
 
 const db = firebaseAdmin.database()
 
-export type Status = {
+export type Result<T = any> = {
   msg: string
   status: 'success' | 'error'
-  data?: any
+  data?: T
+}
+
+export type User = {
+  user_id: string
+  password: string
+  name: string
+  description?: string
+  // birthday
+  followings?: {
+    [user_data_id: string]: { date: string }
+  }
+  followers?: {
+    [user_data_id: string]: { date: string }
+  }
+  ffCount?: {
+    followings: number
+    followers: number
+  }
 }
 
 export class DBManager {

@@ -1,15 +1,11 @@
 import { database } from 'firebase-admin'
-import { Status } from './index'
+import { Result } from './index'
+import { User } from './index'
 
-export type User = {
-  user_id: string
-  password: string
-  name: string
-  description?: string
-  // birthday
-}
-
-const createUser = async (props: User, db: database.Database): Promise<Status> => {
+const createUser = async (
+  props: User,
+  db: database.Database,
+): Promise<Result> => {
   const { user_id, password, name, description } = props
 
   if (user_id && password && name) {
@@ -18,7 +14,7 @@ const createUser = async (props: User, db: database.Database): Promise<Status> =
       await usersRef.orderByChild('user_id').equalTo(user_id).once('value')
     ).val()
     if (isUserExisted) {
-      throw { msg: `User ID "${user_id}" already exists!` } as Status
+      throw { msg: `User ID "${user_id}" already exists!` } as Result
     } else {
       return usersRef
         .push({
@@ -26,20 +22,22 @@ const createUser = async (props: User, db: database.Database): Promise<Status> =
           password,
           name,
           description,
+          // followings: {}, // 入れても空なら消える
+          // folowers: {},
         })
         .then(
           (_) =>
             ({
               msg: `User "${user_id}" created.`,
               status: 'success',
-            } as Status),
+            } as Result),
         )
         .catch(
           (_) =>
             ({
-              msg: `User "${user_id}" created.`,
+              msg: `User "${user_id}" already exists.`,
               status: 'error',
-            } as Status),
+            } as Result),
         )
     }
   }

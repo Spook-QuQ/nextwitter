@@ -1,26 +1,15 @@
 // import { AxiosStatic } from 'axios'
-import { Status } from 'server/modules/DBManager'
+import { GetServerSideProps } from 'next'
+import { Result, User } from 'server/modules/DBManager'
 
 // import { useRouter } from 'next/router'
 
-type PageProps = {
+export type DynamicRouteQuery = {
   id: string
-  data: Status
 }
 
-const UserPageWIthId: React.FC<PageProps> = (props) => {
-  const { id, data } = props
-  return <div>{JSON.stringify(props)}</div>
-}
-
-export type ServerSideContext = {
-  query: {
-    id: string
-  }
-}
-
-export const getServerSideProps = async (context: ServerSideContext) => {
-  const { id } = context.query
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { id } = context.query as DynamicRouteQuery
   // const props: PageProps = { id }
   // return { props }
 
@@ -30,12 +19,33 @@ export const getServerSideProps = async (context: ServerSideContext) => {
   // })
 
   const axios = (await import('axios')).default
-  const { data } = await axios.post(
+  const { data: props } = await axios.post(
     `${process.env.BASE_URL}/server-api/getUser`,
     { query: context.query },
   )
 
-  return { props: { id, data } }
+  return { props }
+
+}
+
+const UserPageWIthId: React.FC<Result<User>> = (props) => {
+  const { status, data } = props
+
+  return (
+    <div>
+      {status === 'success' ? (
+        <div>
+          <h3>{data.name}</h3>
+          <p>@{data.user_id}</p>
+          <p>Followings {data.ffCount.followings}</p>
+          <p>Followers {data.ffCount.followers}</p>
+          {data.description ? <p>{data.description}</p> : null}
+        </div>
+      ) : (
+        <div>{<h3>{props.msg}</h3>}</div>
+      )}
+    </div>
+  )
 }
 
 export default UserPageWIthId
