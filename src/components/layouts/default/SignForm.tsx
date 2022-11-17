@@ -38,9 +38,12 @@ const formInitValues: Form = {
   password: '',
 }
 
-const SignInForm: React.FC = () => {
+type Props = {
+  isOpen?: boolean
+}
 
-  const [formData, setFormData] = useState<Form>(formInitValues)
+const SignInForm: React.FC<Props> = ({ isOpen }) => {
+  const [formData, setFormData] = useState<Form>({ ...formInitValues })
 
   const [isFocus, setIsFocus] = useState({})
 
@@ -69,14 +72,29 @@ const SignInForm: React.FC = () => {
     e.preventDefault()
     const defaultInitValues: Form = {
       ...formInitValues,
-      signType: formData.signType === 'in' ? 'up' : 'in'
+      signType: formData.signType === 'in' ? 'up' : 'in',
     }
+    console.log(defaultInitValues)
     setFormData(defaultInitValues)
   }
-
   return (
-    <div>
-      <form action='' className='max-w-sm' onSubmit={onSubmitHandler}>
+    <div
+      className={`
+        absolute
+        left-0
+        transition-all
+        duration-300
+        ${isOpen ? 'top-0' : 'top-[-100%]'}
+        w-full
+        h-full
+        bg-blue-500/60
+      `}
+    >
+      <form
+        action=''
+        className='p-8 max-w-sm drop-shadow-xl bg-white relative left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]'
+        onSubmit={onSubmitHandler}
+      >
         <h3 className='text-2xl font-bold text-blue-500 text-center'>
           Sign {formData.signType === 'in' ? 'In' : 'Up'}
         </h3>
@@ -106,6 +124,7 @@ const SignInForm: React.FC = () => {
                     //     ? ''
                     //     : content.placeholder
                     // }
+                    value={formData[content.dataName]}
                     onFocus={() => onFocusHandler(content.dataName)}
                     onBlur={() => onBlurHandler(content.dataName)}
                     onChange={(e) => onChangeLander(e, content.dataName)}
