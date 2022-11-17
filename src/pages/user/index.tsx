@@ -1,5 +1,9 @@
 const UserPage: React.FC = () => {
-  return <div></div>
+  return (
+    <div>
+      <p>user/index</p>
+    </div>
+  )
 }
 
 export default UserPage
