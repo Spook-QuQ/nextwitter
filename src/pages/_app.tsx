@@ -1,6 +1,8 @@
 import '../styles/globals.sass'
 import type { AppProps } from 'next/app'
 import DefaultLayout from '@/components/layouts/default'
+import { Provider } from 'react-redux'
+import { store } from '@/store'
 
 type PropsOfLayout = {
   children: React.ReactElement
@@ -18,8 +20,10 @@ export default function App({
 }: AppProps & PageComponentCustomProps) {
   const Layout = Component._layout || DefaultLayout
   return (
-    <Layout>
-      <Component {...pageProps} />
-    </Layout>
+    <Provider store={store}>
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
+    </Provider>
   )
 }

@@ -1,4 +1,7 @@
 import { MouseEvent, ChangeEvent, FormEvent, useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { toggleSignModal } from '@/store/slices/defaultLayoutSlice'
+import { MdClose } from 'react-icons/md'
 
 type Form = {
   signType: 'in' | 'up'
@@ -43,6 +46,8 @@ type Props = {
 }
 
 const SignInForm: React.FC<Props> = ({ isOpen }) => {
+  const dispatch = useDispatch()
+
   const [formData, setFormData] = useState<Form>({ ...formInitValues })
 
   const [isFocus, setIsFocus] = useState({})
@@ -95,6 +100,31 @@ const SignInForm: React.FC<Props> = ({ isOpen }) => {
         className='p-8 max-w-sm drop-shadow-xl bg-white relative left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]'
         onSubmit={onSubmitHandler}
       >
+        <span
+          className='
+            absolute
+            right-0
+            top-0
+            p-6
+          '
+        >
+          <button
+            className='
+              block
+              p-1
+              bg-stone-400
+              text-white
+              hover:bg-stone-500
+              rounded-full
+            '
+            onClick={(e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
+              e.preventDefault()
+              dispatch(toggleSignModal(false))
+            }}
+          >
+            <MdClose />
+          </button>
+        </span>
         <h3 className='text-2xl font-bold text-blue-500 text-center'>
           Sign {formData.signType === 'in' ? 'In' : 'Up'}
         </h3>
@@ -142,6 +172,7 @@ const SignInForm: React.FC<Props> = ({ isOpen }) => {
               rounded-sm
               bg-blue-500
               text-blue-100
+              hover:bg-blue-700
             '
           >
             Sign {formData.signType === 'in' ? 'In' : 'Up'}
@@ -150,13 +181,12 @@ const SignInForm: React.FC<Props> = ({ isOpen }) => {
             onClick={onClickHandlerForChangeFormType}
             className='
               text-sm
-              font-bold
               text-blue-500
               underline
               underline-offset-4
             '
           >
-            {`>> Sign ${formData.signType !== 'in' ? 'In' : 'Up'}`}
+            {`> Sign ${formData.signType !== 'in' ? 'In' : 'Up'}`}
           </button>
         </p>
       </form>
