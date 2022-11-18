@@ -1,5 +1,5 @@
 import { database } from 'firebase-admin'
-import { Result } from './index'
+import { Result } from 'server/routes/server-api'
 import { User } from './index'
 
 const createUser = async (

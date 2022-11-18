@@ -1,9 +1,11 @@
 import { MouseEvent, ChangeEvent, FormEvent, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { toggleSignModal } from '@/store/slices/defaultLayoutSlice'
+import { ThunkAction } from '@reduxjs/toolkit'
+import { toggleSignModal, requestSign } from '@/store/slices/defaultLayoutSlice'
 import { MdClose } from 'react-icons/md'
+import { AppDispatch } from '@/store'
 
-type Form = {
+export type SignFormData = {
   signType: 'in' | 'up'
   user_id: string
   name: string
@@ -34,7 +36,7 @@ const formContents: FromContent[] = [
   },
 ]
 
-const formInitValues: Form = {
+const formInitValues: SignFormData = {
   signType: 'in',
   user_id: '',
   name: '',
@@ -46,9 +48,9 @@ type Props = {
 }
 
 const SignInForm: React.FC<Props> = ({ isOpen }) => {
-  const dispatch = useDispatch()
+  const dispatch: AppDispatch = useDispatch()
 
-  const [formData, setFormData] = useState<Form>({ ...formInitValues })
+  const [formData, setFormData] = useState<SignFormData>({ ...formInitValues })
 
   const [isFocus, setIsFocus] = useState({})
 
@@ -70,16 +72,22 @@ const SignInForm: React.FC<Props> = ({ isOpen }) => {
 
   const onSubmitHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    console.log('ok')
+    dispatch(requestSign(formData))
+  }
+
+  const onClicForCloseWindow = (
+    e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>,
+  ) => {
+    e.preventDefault()
+    dispatch(toggleSignModal(false))
   }
 
   const onClickHandlerForChangeFormType = (e: MouseEvent<HTMLInputElement>) => {
     e.preventDefault()
-    const defaultInitValues: Form = {
+    const defaultInitValues: SignFormData = {
       ...formInitValues,
       signType: formData.signType === 'in' ? 'up' : 'in',
     }
-    console.log(defaultInitValues)
     setFormData(defaultInitValues)
   }
   return (
@@ -117,10 +125,7 @@ const SignInForm: React.FC<Props> = ({ isOpen }) => {
               hover:bg-stone-500
               rounded-full
             '
-            onClick={(e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
-              e.preventDefault()
-              dispatch(toggleSignModal(false))
-            }}
+            onClick={onClicForCloseWindow}
           >
             <MdClose />
           </button>
@@ -166,14 +171,7 @@ const SignInForm: React.FC<Props> = ({ isOpen }) => {
         <p className='mt-8 flex gap-4 justify-center align-center'>
           <button
             type='submit'
-            className='
-              px-2
-              py-1
-              rounded-sm
-              bg-blue-500
-              text-blue-100
-              hover:bg-blue-700
-            '
+            className='quq-main-button'
           >
             Sign {formData.signType === 'in' ? 'In' : 'Up'}
           </button>

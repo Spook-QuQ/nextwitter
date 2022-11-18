@@ -12,7 +12,7 @@ type Props = {
 
 const DefaultLayout: React.FC<Props> = (props) => {
   const isOpen = useSelector<{ defaultLayout: InitState }, boolean>(
-    (state) => state.defaultLayout.isSignFormOpen,
+    (state) => state.defaultLayout.sign.isFormOpen,
   )
 
   return (

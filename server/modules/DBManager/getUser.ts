@@ -1,5 +1,5 @@
 import { database } from 'firebase-admin'
-import { Result } from './index'
+import { Result } from 'server/routes/server-api'
 import { User } from './index'
 
 export type ArgsOfGetUser = {
@@ -36,7 +36,7 @@ const getUser = async (args: ArgsOfGetUser, db: database.Database) => {
         msg: `User "${args.user_id}" found.`,
         status: 'success',
         data: userData,
-      } as Result
+      } as Result<User>
     } else {
       throw { msg: `User "${args.user_id}" not found.`, status: 'error' }
     }

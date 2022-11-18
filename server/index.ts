@@ -6,7 +6,7 @@ import next from 'next'
 import socket_io from 'socket.io'
 
 import serverApiRouter from './routes/server-api'
-import { DBManager } from './modules/DBManager'
+import { DBManager, User } from './modules/DBManager'
 
 dotenv.config()
 
@@ -27,10 +27,43 @@ const dbManager = new DBManager()
 
 // dbManager
 //   .getUser({
-//     user_id: 'test-user-278aa9',
+//     user_id: 'test-user-1701',
 //   })
 //   .then(console.log)
 //   .catch(console.log)
+
+dbManager.createUser({
+  user_id: 'test-user-1',
+  // user_id: 'test-user-2789',
+  name: 'Test Man!',
+  password: 'super!testPassword',
+  description: 'This is a description'
+}).then(console.log).catch(console.log)
+dbManager.createUser({
+  user_id: 'test-user-2',
+  // user_id: 'test-user-2789',
+  name: 'Test Man!',
+  password: 'super!testPassword',
+  description: 'This is a description'
+}).then(console.log).catch(console.log)
+
+dbManager
+  .getUser({
+    user_id: 'test-user-1701',
+  })
+  .then(({ data: user }) => {
+    const { followings, followers } = user as User
+
+    const ffCount = {
+      followings: Object.keys(followings || {}).length,
+      followers: Object.keys(followers || {}).length
+    }
+
+    console.log(ffCount);
+    
+    
+  })
+  .catch(console.log)
 
 nextApp.prepare().then(async () => {
   const expressServer = express()

@@ -1,6 +1,7 @@
 // import { AxiosStatic } from 'axios'
 import { GetServerSideProps } from 'next'
-import { Result, User } from 'server/modules/DBManager'
+import { User } from 'server/modules/DBManager'
+import { Result } from 'server/routes/server-api'
 
 // import { useRouter } from 'next/router'
 

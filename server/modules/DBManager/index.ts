@@ -44,15 +44,9 @@ firebaseAdmin.initializeApp({
 
 const db = firebaseAdmin.database()
 
-export type Result<T = any> = {
-  msg: string
-  status: 'success' | 'error'
-  data?: T
-}
-
 export type User = {
   user_id: string
-  password: string
+  password?: string
   name: string
   description?: string
   // birthday
