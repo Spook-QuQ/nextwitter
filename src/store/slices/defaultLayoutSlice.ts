@@ -8,8 +8,8 @@ export type InitState = {
   sign: {
     isFormOpen: boolean
     isRequesting: boolean
-    isSignedIn: boolean
     errorMessage: string
+    isSignChecked: boolean
   }
   userData?: User
 }
@@ -38,7 +38,6 @@ export const requestSign = createAsyncThunk<
     '/server-api/sign',
     { formData },
   )
-  
 
   if (typeof result === 'object') {
     if (result.status === 'error') return ThunkAPI.rejectWithValue(result)
@@ -56,12 +55,21 @@ export const requestSign = createAsyncThunk<
   }
 })
 
+export const checkSign = createAsyncThunk<Result | Result<User>>(
+  'defaultLayout/checkSign',
+  async () => {
+    const { data: result } = await axios.get('/server-api/checkSign')
+
+    return result as Result
+  },
+)
+
 const initialState: InitState = {
   sign: {
     isFormOpen: false,
     isRequesting: false,
-    isSignedIn: false,
     errorMessage: '',
+    isSignChecked: false,
   },
   userData: null,
 }
@@ -80,6 +88,7 @@ const defaultLayoutSlice = createSlice({
   },
   extraReducers(builder) {
     builder
+      // 🍎
       .addCase(requestSign.pending, (state) => {
         state.sign.isRequesting = true
         state.sign.errorMessage = ''
@@ -92,7 +101,6 @@ const defaultLayoutSlice = createSlice({
         const result: Result<User> = action.payload
 
         state.userData = result.data
-        state.sign.isSignedIn = true
         state.sign.isFormOpen = false
       })
       .addCase(requestSign.rejected, (state, action) => {
@@ -101,6 +109,18 @@ const defaultLayoutSlice = createSlice({
         state.sign.isRequesting = false
         state.sign.errorMessage =
           (result && result.msg) || 'Something went wrong.'
+      })
+      // 🍎
+      .addCase(checkSign.fulfilled, (state, action) => {
+        const result = action.payload as Result | undefined
+        if (result) {
+          state.sign.isSignChecked = true
+          state.userData = result.data
+
+          state.sign.errorMessage = ''
+          state.sign.isRequesting = false
+          state.sign.isFormOpen = false
+        }
       })
   },
 })

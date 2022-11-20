@@ -13,6 +13,12 @@ router.post('/', async (req, res) => {
   const {
     query: { id },
   } = req.body as { query: DynamicRouteQueryOfUserIdPage }
+
+  if (!id) return res.send({
+    msg: 'query "id" is invalid',
+    status: 'error'
+  } as Result)
+
   const dbManager = req.app.get('dbManager') as DBManager
   dbManager
     .getUser({

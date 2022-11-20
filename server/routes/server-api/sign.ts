@@ -23,16 +23,13 @@ router.post('/', async (req, res) => {
 
   if (formData.signType === 'in') {
     dbManager
-      .signIn(formData, req.session)
+      .signIn(formData, req)
       .then((result) => res.send(result))
       .catch((result) => res.send(result))
   } else if (formData.signType === 'up') {
     dbManager
-      .signUp(formData, req.session) // 🍄 signUp 作成中 / 作製後、データ加工の必要性を要確認
-      .then((result) => {
-        console.log(result)
-        res.send(result)
-      })
+      .signUp(formData, req)
+      .then((result) => res.send(result))
       .catch((result) => res.send(result))
   }
 })

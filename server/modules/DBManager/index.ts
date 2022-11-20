@@ -16,10 +16,15 @@ return res.send(???) で終了
 
 import { SignFormData } from '@/components/layouts/default/SignForm'
 import dotenv from 'dotenv'
+import { Request } from 'express'
 import { Session, SessionData } from 'express-session'
 import firebaseAdmin, { database } from 'firebase-admin'
 import createdUser from './createUser'
 import getUser, { ArgsOfGetUser, OptionsOfGetUser } from './getUser'
+import getUserByUID, {
+  ArgsOfGetUserByUID,
+  OptionsOfGetUserByUID,
+} from './getUserByUID'
 import signIn from './signIn'
 import signUp from './signUp'
 
@@ -93,12 +98,12 @@ export class DBManager {
   createUser = async (args: User) => await createdUser(db, args)
   getUser = async (args: ArgsOfGetUser, options?: OptionsOfGetUser) =>
     await getUser(db, args, options)
-  signIn = async (
-    formData: SignFormData,
-    session: Session & Partial<SessionData>,
-  ) => await signIn(db, formData, session)
-  signUp = async (
-    formData: SignFormData,
-    session: Session & Partial<SessionData>,
-  ) => await signUp(db, formData, session)
+  getUserByUID = async (
+    args: ArgsOfGetUserByUID,
+    options?: OptionsOfGetUserByUID,
+  ) => await getUserByUID(db, args, options)
+  signIn = async (formData: SignFormData, req: Request) =>
+    await signIn(db, formData, req)
+  signUp = async (formData: SignFormData, req: Request) =>
+    await signUp(db, formData, req)
 }

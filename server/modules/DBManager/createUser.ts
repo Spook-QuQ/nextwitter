@@ -16,8 +16,9 @@ const createUser = async (
       throw { msg: `Sign up failed: Alaready User "@${user_id}" exists.` } as Result
     } else {
       const usersRef = db.ref('/users')
-      return usersRef
-        .push({
+      const newUserRef = usersRef.push()
+      return newUserRef
+        .update({
           user_id,
           password,
           name,
@@ -32,6 +33,7 @@ const createUser = async (
             data: {
               name,
               user_id,
+              user_uid: newUserRef.key,
               description
             }
           } as Result<User>

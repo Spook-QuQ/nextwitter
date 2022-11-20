@@ -3,7 +3,7 @@ import dotenv from 'dotenv'
 import express, { RequestHandler } from 'express'
 import session, { SessionOptions } from 'express-session'
 
-declare module "express-session" {
+declare module 'express-session' {
   interface SessionData {
     user_uid: string
   }
@@ -30,9 +30,13 @@ nextApp.prepare().then(async () => {
 
   const SessionOptions: SessionOptions = {
     secret: 'This is a test secret! QuQ',
-    resave: false,
+    resave: true,
     saveUninitialized: false,
-    cookie: { maxAge: 1000 * 60 * 30 }, // 30分
+    cookie: {
+      // httpOnly: false,
+      // secure: false,
+      maxAge: 1000 * 60 * 30,
+    }, // 30分
   }
   expressServer.use(session(SessionOptions))
 

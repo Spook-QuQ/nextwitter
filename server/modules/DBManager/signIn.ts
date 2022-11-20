@@ -4,14 +4,11 @@ import { Database } from 'firebase-admin/lib/database/database'
 import { Result } from 'server/routes/server-api'
 import { User } from './index'
 import getUser from './getUser'
+import { Request } from 'express'
 
 const errMsg = 'Sign in failed : Something went wrong.'
 
-const signIn = async (
-  db: Database,
-  formData: SignFormData,
-  session: Session & Partial<SessionData>,
-) => {
+const signIn = async (db: Database, formData: SignFormData, req: Request) => {
   return await getUser(
     db,
     { user_id: formData.user_id },
@@ -19,20 +16,29 @@ const signIn = async (
   )
     .then(({ data: userData }) => {
       if (userData.password === formData.password) {
-        session.user_uid = userData.user_uid
-
-        userData.user_uid = undefined
-        delete userData.user_uid
-
         userData.password = undefined
         delete userData.password
 
-        return {
-          msg: 'Sign in successful.',
-          status: 'success',
-          data: userData,
-        } as Result<User>
+        return new Promise<Result<User> | Result>((resolve, reject) => {
+          req.session.regenerate((err) => {
+            if (err)
+              reject({
+                msg: err,
+                status: 'error',
+              } as Result)
+            else {
+              req.session.user_uid = userData.user_uid
+              userData.user_uid = undefined
+              delete userData.user_uid
 
+              resolve({
+                msg: 'Sign in successful.',
+                status: 'success',
+                data: userData,
+              } as Result<User>)
+            }
+          })
+        })
       } else {
         throw { msg: errMsg, status: 'error' } as Result
       }

@@ -7,8 +7,8 @@ import Link from 'next/link'
 const DefaultLayoutHeader: React.FC = () => {
   const dispatch = useDispatch()
 
-  const isSignedIn = useSelector<{ defaultLayout: InitState }, boolean>(
-    (state) => state.defaultLayout.sign.isSignedIn,
+  const isSignChecked = useSelector<{ defaultLayout: InitState }, boolean>(
+    (state) => state.defaultLayout.sign.isSignChecked,
   )
 
   const userData = useSelector<{ defaultLayout: InitState }, User>(
@@ -24,29 +24,34 @@ const DefaultLayoutHeader: React.FC = () => {
 
   return (
     <header className='p-4 sm:p-8 flex justify-between items-center bg-blue-500 text-white'>
-      <h1 className='text-3xl'>{process.env.NEXT_PUBLIC_SITE_TITLE}</h1>
+      <h1 className='text-3xl font-bold'>
+        {process.env.NEXT_PUBLIC_SITE_TITLE}
+      </h1>
       <nav>
         <ul>
-          <li className='outline outline-blue-400'>
-            {!isSignedIn && (
-              <a
-                className='quq-main-button text-sm p-2 block'
-                onClick={onClickForOpenSignWindow}
-              >
-                Sign In / Sign Up
-              </a>
-            )}
-            {userData && (
-              <Link className='quq-main-button p-2 block' href={`/user/${userData.user_id}`}>
-                <p>
-                  <span>{userData.name}</span>
-                </p>
-                <p>
-                  <small>@{userData.user_id}</small>
-                </p>
-              </Link>
-            )}
-          </li>
+          {isSignChecked && (
+            <li className='outline outline-blue-400'>
+              {!userData && (
+                <a
+                  className='quq-main-button text-sm p-2 block'
+                  onClick={onClickForOpenSignWindow}
+                >
+                  Sign In / Sign Up
+                </a>
+              )}
+              {userData && (
+                <Link
+                  className='quq-main-button p-2 block'
+                  href={`/user/${userData.user_id}`}
+                >
+                  <p>
+                    <span className='font-bold'>{userData.name}</span>
+                    <small className='ml-2'>@{userData.user_id}</small>
+                  </p>
+                </Link>
+              )}
+            </li>
+          )}
         </ul>
       </nav>
     </header>
