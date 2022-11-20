@@ -1,9 +1,14 @@
 import { MouseEvent, ChangeEvent, FormEvent, useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { ThunkAction } from '@reduxjs/toolkit'
-import { toggleSignModal, requestSign } from '@/store/slices/defaultLayoutSlice'
-import { MdClose } from 'react-icons/md'
+import { useDispatch, useSelector } from 'react-redux'
+import {
+  toggleSignModal,
+  requestSign,
+  InitState,
+} from '@/store/slices/defaultLayoutSlice'
 import { AppDispatch } from '@/store'
+import CloseButton from './CloseButton'
+import InputWithLabel from './InputWithLabel'
+import PingCircle from './PingCircle'
 
 export type SignFormData = {
   signType: 'in' | 'up'
@@ -14,7 +19,7 @@ export type SignFormData = {
 
 type FromContent = {
   dataName: string
-  type: string
+  type: 'text' | 'password'
   placeholder: string
 }
 
@@ -54,6 +59,14 @@ const SignInForm: React.FC<Props> = ({ isOpen }) => {
 
   const [isFocus, setIsFocus] = useState({})
 
+  const errorMessage = useSelector<{ defaultLayout: InitState }, string>(
+    (state) => state.defaultLayout.sign.errorMessage,
+  )
+
+  const isRequesting = useSelector<{ defaultLayout: InitState }, boolean>(
+    (state) => state.defaultLayout.sign.isRequesting,
+  )
+
   const onFocusHandler = (dataName) => {
     setIsFocus({ [dataName]: true })
   }
@@ -61,7 +74,7 @@ const SignInForm: React.FC<Props> = ({ isOpen }) => {
     setIsFocus({ [dataName]: false })
   }
 
-  const onChangeLander = (
+  const onChangeHandler = (
     e: ChangeEvent<HTMLInputElement>,
     dataName: string,
   ) => {
@@ -116,19 +129,7 @@ const SignInForm: React.FC<Props> = ({ isOpen }) => {
             p-6
           '
         >
-          <button
-            className='
-              block
-              p-1
-              bg-stone-400
-              text-white
-              hover:bg-stone-500
-              rounded-full
-            '
-            onClick={onClicForCloseWindow}
-          >
-            <MdClose />
-          </button>
+          <CloseButton onClick={onClicForCloseWindow} />
         </span>
         <h3 className='text-2xl font-bold text-blue-500 text-center'>
           Sign {formData.signType === 'in' ? 'In' : 'Up'}
@@ -140,39 +141,17 @@ const SignInForm: React.FC<Props> = ({ isOpen }) => {
           .map((content) => {
             return (
               <p key={content.dataName} className='pt-8'>
-                <label className={`relative`} htmlFor={`\$${content.dataName}`}>
-                  <span
-                    className={`absolute transition-all duration-200 cursor-text ${
-                      isFocus[content.dataName] || !!formData[content.dataName]
-                        ? 'p-0 -translate-y-[100%] opacity-1 cursor-pointer text-blue-500'
-                        : 'p-2 opacity-30'
-                    }`}
-                  >
-                    {content.placeholder}
-                  </span>
-                  <input
-                    id={`\$${content.dataName}`}
-                    className='w-full p-2 bg-slate-100 focus:outline-none focus:ring-1 ring-blue-500'
-                    type={content.type}
-                    // placeholder={
-                    //   isFocus[content.dataName] || !!formData[content.dataName]
-                    //     ? ''
-                    //     : content.placeholder
-                    // }
-                    value={formData[content.dataName]}
-                    onFocus={() => onFocusHandler(content.dataName)}
-                    onBlur={() => onBlurHandler(content.dataName)}
-                    onChange={(e) => onChangeLander(e, content.dataName)}
-                  />
-                </label>
+                <InputWithLabel
+                  value={formData[content.dataName]}
+                  label={content.placeholder}
+                  type={content.type}
+                  onChange={(e) => onChangeHandler(e, content.dataName)}
+                />
               </p>
             )
           })}
         <p className='mt-8 flex gap-4 justify-center align-center'>
-          <button
-            type='submit'
-            className='quq-main-button'
-          >
+          <button type='submit' className='quq-main-button'>
             Sign {formData.signType === 'in' ? 'In' : 'Up'}
           </button>
           <button
@@ -188,6 +167,25 @@ const SignInForm: React.FC<Props> = ({ isOpen }) => {
           </button>
         </p>
       </form>
+      {isRequesting && <PingCircle />}
+      <div
+        className={`
+          absolute
+          bottom-0
+          left-[50%]
+          translate-x-[-50%]
+          bg-white
+          text-center overflow-hidden
+          transition-all duration-300
+          text-red-600
+          font-bold
+          shadow-md
+          rounded-md
+          ${errorMessage ? 'mb-8 p-4 max-h-[80px]' : 'm-0 p-0 max-h-0'}
+        `}
+      >
+        <span className='block'>{errorMessage}</span>
+      </div>
     </div>
   )
 }

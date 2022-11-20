@@ -1,7 +1,27 @@
+/*　NOTE:
+
+🍄  user_idが重複してしまう可能性がある
+その場合、１つ目のデータに合致した人しかログインできないことに。
+（同時に同じuser_idで作製・IDの変更をされてしまうと重複は起こるかもしれない）
+
+*/
+
+/* TODO:
+
+🍄もうログインしているかをreq.session.user_uidで確認する
+ログインしていたら Result.status = 'error' を返す
+return res.send(???) で終了
+
+*/
+
+import { SignFormData } from '@/components/layouts/default/SignForm'
 import dotenv from 'dotenv'
+import { Session, SessionData } from 'express-session'
 import firebaseAdmin, { database } from 'firebase-admin'
 import createdUser from './createUser'
-import getUser, { ArgsOfGetUser } from './getUser'
+import getUser, { ArgsOfGetUser, OptionsOfGetUser } from './getUser'
+import signIn from './signIn'
+import signUp from './signUp'
 
 dotenv.config()
 
@@ -46,6 +66,7 @@ const db = firebaseAdmin.database()
 
 export type User = {
   user_id: string
+  user_uid?: string
   password?: string
   name: string
   description?: string
@@ -69,6 +90,15 @@ export class DBManager {
     // this.db = db
   }
 
-  createUser = async (args: User) => await createdUser(args, db)
-  getUser = async (args: ArgsOfGetUser) => await getUser(args, db)
+  createUser = async (args: User) => await createdUser(db, args)
+  getUser = async (args: ArgsOfGetUser, options?: OptionsOfGetUser) =>
+    await getUser(db, args, options)
+  signIn = async (
+    formData: SignFormData,
+    session: Session & Partial<SessionData>,
+  ) => await signIn(db, formData, session)
+  signUp = async (
+    formData: SignFormData,
+    session: Session & Partial<SessionData>,
+  ) => await signUp(db, formData, session)
 }

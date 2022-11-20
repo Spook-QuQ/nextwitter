@@ -6,17 +6,28 @@ export type ArgsOfGetUser = {
   user_id: string
 }
 
-const getUser = async (args: ArgsOfGetUser, db: database.Database) => {
+export type OptionsOfGetUser = {
+  uid?: boolean
+  password?: boolean
+}
+
+const getUser = async (
+  db: database.Database,
+  args: ArgsOfGetUser,
+  options?: OptionsOfGetUser,
+) => {
   if (args.user_id) {
-    const _user = (
-      await db
-        .ref(`/users/`)
-        .orderByChild('user_id')
-        .equalTo(args.user_id)
-        .once('value')
-    ).val()
+    const targetUserRef = db
+      .ref(`/users/`)
+      .orderByChild('user_id')
+      .equalTo(args.user_id)
+      .limitToFirst(1)
+
+    const targetRs = await targetUserRef.once('value')
+    const _user = targetRs.val()
 
     if (_user) {
+
       const userData: User = _user[Object.keys(_user)[0]]
       const { user_id, description, name } = userData
 
@@ -31,6 +42,16 @@ const getUser = async (args: ArgsOfGetUser, db: database.Database) => {
       delete userData.followers
       userData.followings = undefined
       delete userData.followings
+
+      if (typeof options === 'object' && options.uid) {
+        const user_uid = Object.keys(_user)[0]
+        userData.user_uid = user_uid
+      }
+
+      if (!(typeof options === 'object' && options.password)) {
+        userData.password = undefined
+        delete userData.password
+      }
 
       return {
         msg: `User "${args.user_id}" found.`,

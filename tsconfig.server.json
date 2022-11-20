@@ -3,6 +3,7 @@
   "compilerOptions": {
     "module": "commonjs",
     "outDir": "./dist/",
+    // "outFile": "./dist/server/index.js", // １つのファイルにまとめる 🍄 エラーになる
     "noEmit": false
   },
   "include": ["./server"],

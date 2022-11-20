@@ -16,9 +16,9 @@ const DefaultLayout: React.FC<Props> = (props) => {
   )
 
   return (
-    <div className='p-4 sm:p-8'>
+    <div className=''>
       <Header />
-      <main>{props.children}</main>
+      <main className='p-4 sm:p-8'>{props.children}</main>
       <Footer />
       <SignInForm isOpen={isOpen} />
     </div>
