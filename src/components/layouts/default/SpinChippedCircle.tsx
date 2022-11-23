@@ -1,6 +1,6 @@
 const LoadingCircle: React.FC = () => {
   return (
-    <div
+    <span
         className='
           absolute
           inline-block
@@ -21,7 +21,7 @@ const LoadingCircle: React.FC = () => {
             rounded-full
           '
         ></span>
-      </div>
+      </span>
   )
 }
 

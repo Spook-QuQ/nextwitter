@@ -15,7 +15,10 @@ const signUp = async (
   // const isUserExists = await getUser(db, { user_id: formData.user_id })
   // console.log(isUserExists)
 
-  // TODO: 🍄 作ろうとしている User の user_id が正常かどうかを確認する
+  // TODO:
+  // 🍄 作ろうとしている User の user_id が正常かどうかを確認する
+  //  ・特殊文字が含まれていないかどうか（ハイフンとアンダースコアは許す）
+  //  ・文字数の制限をする
   const isNameSafe = true
   if (!isNameSafe) {
     const err: Result = {

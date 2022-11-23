@@ -3,8 +3,8 @@ import { useDispatch } from 'react-redux'
 import Header from './Header'
 import Footer from './Footer'
 import SignInForm from './SignForm'
+import UserContextWindow from './UserContextWindow'
 
-import { useSelector } from 'react-redux'
 import { checkSign, InitState } from '@/store/slices/defaultLayoutSlice'
 import { AppDispatch } from '@/store'
 
@@ -14,9 +14,6 @@ type Props = {
 
 const DefaultLayout: React.FC<Props> = (props) => {
   const dispatch: AppDispatch = useDispatch()
-  const isOpen = useSelector<{ defaultLayout: InitState }, boolean>(
-    (state) => state.defaultLayout.sign.isFormOpen,
-  )
 
   useEffect(() => {
     dispatch(checkSign())
@@ -27,7 +24,8 @@ const DefaultLayout: React.FC<Props> = (props) => {
       <Header />
       <main className='p-4 sm:p-8'>{props.children}</main>
       <Footer />
-      <SignInForm isOpen={isOpen} />
+      <SignInForm />
+      <UserContextWindow />
     </div>
   )
 }

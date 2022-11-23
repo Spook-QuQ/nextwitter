@@ -1,7 +1,10 @@
 // import { AxiosStatic } from 'axios'
 import { GetServerSideProps } from 'next'
+import { useSelector } from 'react-redux'
 import { User } from 'server/modules/DBManager'
 import { Result } from 'server/routes/server-api'
+import UserProfile from '@/components/layouts/default/UserProfile'
+import { InitState } from '@/store/slices/defaultLayoutSlice'
 
 // import { useRouter } from 'next/router'
 
@@ -11,36 +14,31 @@ export type DynamicRouteQuery = {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { id } = context.query as DynamicRouteQuery
-  // const props: PageProps = { id }
-  // return { props }
-
-  // const res = await fetch('/server-api/getUser', {
-  //   method: 'POST',
-  //   body: JSON.stringify(context.query)
-  // })
 
   const axios = (await import('axios')).default
   const { data: props } = await axios.post(
-    `${process.env.BASE_URL}/server-api/getUser`,
+    `${process.env.BASE_URL}/server-api/get-user`,
     { query: context.query },
   )
 
   return { props }
-
 }
 
 const UserPageWIthId: React.FC<Result<User>> = (props) => {
-  const { status, data } = props
+  const { status, data: pageUserData } = props
+
+  const userData = useSelector<{ defaultLayout: InitState }, User>(
+    (state) => state.defaultLayout.userData,
+  )
 
   return (
     <div>
-      {status === 'success' ? (
+      {status === 'success' && !!pageUserData ? (
         <div>
-          <h3>{data.name}</h3>
-          <p>@{data.user_id}</p>
-          <p>Followings {data.ffCount.followings}</p>
-          <p>Followers {data.ffCount.followers}</p>
-          {data.description ? <p>{data.description}</p> : null}
+          <UserProfile
+            userData={pageUserData}
+            isSignedUser={userData && (userData.user_id === pageUserData.user_id)}
+          />
         </div>
       ) : (
         <div>{<h3>{props.msg}</h3>}</div>

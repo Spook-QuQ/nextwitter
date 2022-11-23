@@ -3,6 +3,7 @@ import axios from 'axios'
 import { SignFormData } from '@/components/layouts/default/SignForm'
 import { Result } from 'server/routes/server-api'
 import { User } from 'server/modules/DBManager'
+import { UserMetadata } from 'firebase-admin/lib/auth/user-record'
 
 export type InitState = {
   sign: {
@@ -12,6 +13,7 @@ export type InitState = {
     isSignChecked: boolean
   }
   userData?: User
+  isUserContextWindowOpen: boolean
 }
 
 export const requestSign = createAsyncThunk<
@@ -56,9 +58,9 @@ export const requestSign = createAsyncThunk<
 })
 
 export const checkSign = createAsyncThunk<Result | Result<User>>(
-  'defaultLayout/checkSign',
+  'defaultLayout/check-sign',
   async () => {
-    const { data: result } = await axios.get('/server-api/checkSign')
+    const { data: result } = await axios.get('/server-api/check-sign')
 
     return result as Result
   },
@@ -72,6 +74,7 @@ const initialState: InitState = {
     isSignChecked: false,
   },
   userData: null,
+  isUserContextWindowOpen: false,
 }
 
 const defaultLayoutSlice = createSlice({
@@ -83,6 +86,29 @@ const defaultLayoutSlice = createSlice({
         state.sign.isFormOpen = action.payload
       } else {
         state.sign.isFormOpen = !state.sign.isFormOpen
+      }
+    },
+    toggleUserContextWindow(state, action: PayloadAction<boolean | undefined>) {
+      if (typeof action.payload === 'boolean') {
+        state.isUserContextWindowOpen = action.payload
+      } else {
+        state.isUserContextWindowOpen = !state.isUserContextWindowOpen
+      }
+    },
+    addToFFCount(
+      state,
+      action: PayloadAction<{
+        type: 'followings' | 'followers'
+        value: number
+      }>,
+    ) {
+      if (
+        typeof action.payload === 'object' &&
+        action.payload.type &&
+        Number.isInteger(action.payload.value) &&
+        state.userData
+      ) {
+        state.userData.ffCount[action.payload.type] += action.payload.value
       }
     },
   },
@@ -125,5 +151,6 @@ const defaultLayoutSlice = createSlice({
   },
 })
 
-export const { toggleSignModal } = defaultLayoutSlice.actions
+export const { toggleSignModal, toggleUserContextWindow, addToFFCount } =
+  defaultLayoutSlice.actions
 export default defaultLayoutSlice.reducer

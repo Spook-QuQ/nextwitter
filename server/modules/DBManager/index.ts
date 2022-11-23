@@ -17,7 +17,7 @@ return res.send(???) で終了
 import { SignFormData } from '@/components/layouts/default/SignForm'
 import dotenv from 'dotenv'
 import { Request } from 'express'
-import { Session, SessionData } from 'express-session'
+// import { Session, SessionData } from 'express-session'
 import firebaseAdmin, { database } from 'firebase-admin'
 import createdUser from './createUser'
 import getUser, { ArgsOfGetUser, OptionsOfGetUser } from './getUser'
@@ -27,6 +27,7 @@ import getUserByUID, {
 } from './getUserByUID'
 import signIn from './signIn'
 import signUp from './signUp'
+import follow, { ArgsOfFollow } from './follow'
 
 dotenv.config()
 
@@ -106,4 +107,6 @@ export class DBManager {
     await signIn(db, formData, req)
   signUp = async (formData: SignFormData, req: Request) =>
     await signUp(db, formData, req)
+  follow = async (Args: ArgsOfFollow, req: Request) =>
+    await follow(db, Args, req)
 }

@@ -9,6 +9,7 @@ export type ArgsOfGetUser = {
 export type OptionsOfGetUser = {
   uid?: boolean
   password?: boolean
+  plainFFList?: boolean
 }
 
 const getUser = async (
@@ -38,11 +39,6 @@ const getUser = async (
         followers: Object.keys(followers || {}).length,
       }
 
-      userData.followers = undefined
-      delete userData.followers
-      userData.followings = undefined
-      delete userData.followings
-
       if (typeof options === 'object' && options.uid) {
         const user_uid = Object.keys(_user)[0]
         userData.user_uid = user_uid
@@ -53,13 +49,20 @@ const getUser = async (
         delete userData.password
       }
 
+      if (!(typeof options === 'object' && options.plainFFList)) {
+        userData.followers = undefined
+        delete userData.followers
+        userData.followings = undefined
+        delete userData.followings
+      }
+
       return {
-        msg: `User "${args.user_id}" found.`,
+        msg: `User "@${args.user_id}" found.`,
         status: 'success',
         data: userData,
       } as Result<User>
     } else {
-      throw { msg: `User "${args.user_id}" not found.`, status: 'error' }
+      throw { msg: `User "@${args.user_id}" not found.`, status: 'error' }
     }
   }
 }

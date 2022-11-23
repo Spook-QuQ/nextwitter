@@ -9,6 +9,7 @@ export type ArgsOfGetUserByUID = {
 export type OptionsOfGetUserByUID = {
   uid?: boolean
   password?: boolean
+  plainFFList?: boolean
 }
 
 const getUserByUID = async (
@@ -38,11 +39,6 @@ const getUserByUID = async (
         followers: Object.keys(followers || {}).length,
       }
 
-      userData.followers = undefined
-      delete userData.followers
-      userData.followings = undefined
-      delete userData.followings
-
       if (typeof options === 'object' && options.uid) {
         const user_uid = Object.keys(_user)[0]
         userData.user_uid = user_uid
@@ -51,6 +47,13 @@ const getUserByUID = async (
       if (!(typeof options === 'object' && options.password)) {
         userData.password = undefined
         delete userData.password
+      }
+
+      if (!(typeof options === 'object' && options.plainFFList)) {
+        userData.followers = undefined
+        delete userData.followers
+        userData.followings = undefined
+        delete userData.followings
       }
 
       return {

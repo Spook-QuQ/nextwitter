@@ -1,11 +1,11 @@
 import { DBManager } from 'server/modules/DBManager'
 import { SignFormData } from '@/components/layouts/default/SignForm'
-import { Router } from 'express'
+import { Request, Response, Router } from 'express'
 import { Result } from './index'
 
 const router = Router()
 
-router.post('/', async (req, res) => {
+router.post('/', async (req: Request, res: Response) => {
   const formData = req.body.formData as SignFormData
 
   // 入力が足りない場合のエラー
@@ -32,6 +32,23 @@ router.post('/', async (req, res) => {
       .then((result) => res.send(result))
       .catch((result) => res.send(result))
   }
+})
+
+router.get('/out',(req: Request, res: Response) => {
+  // req.session.destroy() // でもいい。そのままサイトに滞在する事を考えてregenerateにした。
+  req.session.regenerate((err) => {
+    if (err) {
+      res.send({
+        msg: err,
+        status: 'error',
+      } as Result)
+    } else {
+      res.send({
+        msg: 'Signed out.',
+        status: 'success',
+      } as Result)
+    }
+  })
 })
 
 export default router

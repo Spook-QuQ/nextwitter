@@ -3,6 +3,8 @@ import { Router, Request, Response, NextFunction } from 'express'
 import getUser from './getUser'
 import sign from './sign'
 import checkSign from './checkSign'
+import checkFF from './checkFF'
+import follow from './follow'
 
 export type Result<T = undefined> = {
   msg: string
@@ -12,9 +14,7 @@ export type Result<T = undefined> = {
 
 const router = Router()
 
-router.use('/getUser', getUser)
-
-const checkSignedInMiddleWare = (
+const checkSignMiddleWare = (
   req: Request,
   res: Response,
   next: NextFunction,
@@ -24,8 +24,11 @@ const checkSignedInMiddleWare = (
   } else next()
 }
 
-router.use('/sign', checkSignedInMiddleWare, sign)
+router.use('/get-user', getUser)
+router.use('/sign', checkSignMiddleWare, sign)
+router.use('/check-sign', checkSign)
+router.use('/check-ff', checkFF)
+router.use('/follow', follow)
 
-router.use('/checkSign', checkSign)
 
 export default router
